@@ -30,8 +30,6 @@ provider:
   #  stage: dev
   region: eu-west-2
 
-# plugins:
-#   - '@silvermine/serverless-plugin-cloudfront-lambda-edge'
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
 #    - Effect: "Allow"
