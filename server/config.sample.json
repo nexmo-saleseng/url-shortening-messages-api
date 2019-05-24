@@ -1,0 +1,11 @@
+{
+  "BUCKET": "nexmo-demo-shortener-url-sms",
+  "REGION": "eu-west-2",
+  "STAGE": "dev",
+  "API_URL": "",
+  "NEXMO_SMS_FROM": "447418397453",
+  "BASE_URL": "https://a.nxdm.be",
+  "DYNAMODB_TABLE": "DYNAMO_DB_TABLE_NAME",
+  "NEXMO_API_KEY": "YOUR_NEXMO_API_KEY",
+  "NEXMO_API_SECRET": "YOUR_NEXMO_API_SECRET"
+}

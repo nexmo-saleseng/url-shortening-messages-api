@@ -1,0 +1,26 @@
+{
+  "name": "sms-url-shortening",
+  "version": "1.0.0",
+  "description": "Sms Shortening example built using Nexmo MessagesAPI and AWS Serverless components",
+  "main": "index.js",
+  "dependencies": {
+    "bluebird": "^3.5.4",
+    "nexmo": "^2.4.3-beta-1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  },
+  "devDependencies": {
+    "@silvermine/serverless-plugin-cloudfront-lambda-edge": "2.1.1",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.13.0",
+    "prettier": "^1.17.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Enrico Portolan <enrico.portolan@vonage.com>",
+  "license": "ISC"
+}

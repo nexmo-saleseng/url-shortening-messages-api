@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SMS Shortener Demo</title>
+
+    <link rel="stylesheet" href="./assets/volta/dist/css/volta.min.css" />
+    <link rel="stylesheet" href="./style/style.css" />
+    
+    <script
+      type="text/javascript"
+      src="./assets/volta/dist/js/volta.min.js"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.js"
+      integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+
+  <body>
+    <main id="app">
+      <h1 class="Vlt-title Vlt-center">
+        Nexmo SMS shortener
+      </h1>
+      <div class="account-container">
+        <div id="radio-group-select-group" class="Vlt-form__element">
+          <div class="Vlt-label Vlt-center">
+            <label>Choose the account to use:</label>
+          </div>
+          <div class="Vlt-radio Vlt-radio--inline">
+            <label for="defaultaccount">
+              <span class="Vlt-radio__button">
+                <input
+                  type="radio"
+                  id="defaultaccount"
+                  value="defaultaccount"
+                  name="selectaccount"
+                  checked="true"
+                />
+                <span class="Vlt-radio__icon"></span>
+              </span>
+              Use default account
+            </label>
+          </div>
+          <div class="Vlt-radio Vlt-radio--inline">
+            <label for="customaccount">
+              <span class="Vlt-radio__button">
+                <input
+                  type="radio"
+                  id="customaccount"
+                  value="customaccount"
+                  name="selectaccount"
+                />
+                <span class="Vlt-radio__icon"></span>
+              </span>
+              Use custom account
+            </label>
+          </div>
+        </div>
+        <div>
+          <div
+            id="form-account-set"
+            class="Vlt-form__element "
+            style="display: none"
+          >
+            <label class="Vlt-label" for="example-input">Your Api Key</label>
+            <div class="Vlt-input">
+              <input type="text" id="custom-api-key-input" />
+            </div>
+            <label class="Vlt-label" for="example-input">Your Api Secret</label>
+            <div class="Vlt-input">
+              <input type="text" id="custom-api-secret-input" />
+            </div>
+            <label class="Vlt-label" for="example-input"
+              >Click Webhook URL</label
+            >
+            <div class="Vlt-input">
+              <input type="text" id="click-webhook-url" />
+            </div>
+          </div>
+        </div>
+        <div>
+          <button
+            id="save-custom-account-button"
+            class="Vlt-btn Vlt-btn--secondary "
+          >
+            Save settings
+          </button>
+        </div>
+        <hr />
+        <div>
+          <h4>
+            Using the button below the demo will send an SMS with the shorten
+            URL using Nexmo Messages API
+          </h4>
+          <button
+            data-modal="modal1"
+            class="Vlt-btn Vlt-btn--primary Vlt-modal-trigger"
+          >
+            Send SMS
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal, can be positioned anywhere -->
+      <div id="modal1" class="Vlt-modal" data-callback="sendSMS">
+        <div class="Vlt-modal__panel">
+          <!-- Header with title and dismiss button -->
+          <div class="Vlt-modal__header">
+            <h4>Send SMS</h4>
+            <div class="Vlt-modal__dismiss"></div>
+          </div>
+
+          <!-- Content -->
+          <div class="Vlt-modal__content">
+            <div class="Vlt-form__element">
+              <label for="example-input-icon-button" class="Vlt-label"
+                >Phone number</label
+              >
+              <div class="Vlt-input">
+                <input
+                  type="number"
+                  id="sms-to-number"
+                  placeholder="391234567"
+                />
+              </div>
+            </div>
+            <div class="Vlt-form__element ">
+              <label class="Vlt-label" for="example-textarea"
+                >Write your SMS</label
+              >
+              <div class="Vlt-textarea">
+                <textarea
+                  placeholder="Hey, write here your sms with a link. Example: http://www.example.com/awesomeApp/someUserId"
+                  style="resize:none"
+                  rows="4"
+                  cols="50"
+                  id="sms-text-input"
+                ></textarea>
+              </div>
+            </div>
+            <!-- <div class="Vlt-form__element Vlt-form__element--big">
+              <div class="Vlt-input">
+                <input type="text" placeholder="email@example.com"  />
+                <label for="ex-input">SMS text with URL</label>
+              </div>
+            </div> -->
+
+            <!-- Footer with actions -->
+            <div class="Vlt-modal__footer">
+              <button
+                class="Vlt-btn Vlt-btn--app Vlt-btn--tertiary Vlt-modal__cancel"
+              >
+                Cancel
+              </button>
+              <button
+                class="Vlt-btn Vlt-btn--app Vlt-btn--secondary Vlt-modal__confirm"
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="Vlt-grid"
+        style="justify-content: flex-end; margin-right: 15px"
+      >
+        <div id="refresh-container">
+          <button
+            id="refresh-table-button"
+            class="Vlt-btn Vlt-btn--tertiary Vlt-btn--icon"
+          >
+            <svg class="Vlt-icon">
+              <use
+                xlink:href="assets/volta/dist/symbol/volta-icons.svg#Vlt-icon-reload"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- Table -->
+      <div class="Vlt-grid">
+        <div class="Vlt-col">
+          <div class="Vlt-table ">
+            <table>
+              <thead>
+                <th>MessageID</th>
+                <th>Creation Date</th>
+                <th>Original Url</th>
+                <th>Short Url</th>
+                <th>Delivered date</th>
+                <th>Clicked date</th>
+                <th>Status</th>
+              </thead>
+              <tbody id="nexmo-table-sms-list"></tbody>
+            </table>
+          </div>
+          <div class="Vlt-table__pagination">
+            <ul>
+              <li class="Vlt-table__pagination__prev">
+                <a href="#">Previous</a>
+              </li>
+              <li class="Vlt-table__pagination__current">1</li>
+              <li><a href="#" rel="2">2</a></li>
+              <li>...</li>
+              <li><a href="#">10</a></li>
+              <li class="Vlt-table__pagination__next">
+                <a href="#">Next</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="Vlt-container Vlt-margin--top2">
+        <h2 class="Vlt-title Vlt-center">Charts</h2>
+        <div class="chart-container">
+          <canvas id="pieChart" width="400" height="400"></canvas>
+        </div>
+      </div>
+    </main>
+  </body>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+  <script>
+    /**
+     * Init Volta modules
+     * */
+    Volta.modal.init();
+    Volta.dropdown.init();
+    window.dataChart = {
+      datasets: [
+        {
+          data: [null, null, null],
+          backgroundColor: ["#ffc000", "#35be8b", "#33aaee"]
+        }
+      ],
+      labels: ["sent", "clicked", "delivered"]
+    };
+    window.nexmoAccount = getNexmoAccount();
+    window.loadDataInTable = function() {
+      axios
+        .get(
+          "https://3ip3eoi6hk.execute-api.eu-west-2.amazonaws.com/dev/shortener/sms-list",
+          {
+            params: {
+              api_key: nexmoAccount.apiKey,
+              api_secret: nexmoAccount.apiSecret
+            }
+          }
+        )
+        .then(function(res) {
+          var totalCells = 7;
+          dataChart.datasets[0].data = [null, null, null];
+          var list = res.data.list;
+          list.sort(function(a, b) {
+            if (a.creationDate < b.creationDate) {
+              return 1;
+            }
+            if (a.creationDate > b.creationDate) {
+              return -1;
+            }
+            return 0;
+          });
+          var tbody = $("#nexmo-table-sms-list");
+          tbody.empty();
+          for (var i = 0; i < list.length; i++) {
+            var tr = $("<tr/>").appendTo(tbody);
+            tr.append("<td>" + list[i].messageId + "</td>");
+            tr.append(
+              "<td>" +
+                moment(list[i].creationDate).format("MMMM Do YYYY, h:mm:ss a") +
+                "</td>"
+            );
+            tr.append("<td>" + list[i].originalUrl + "</td>");
+            tr.append("<td>" + list[i].id + "</td>");
+            tr.append(formatDateForTable(list[i].deliveredDate));
+            tr.append(formatDateForTable(list[i].clickedDate));
+            tr.append(handleMessageStatus(list[i].messageStatus));
+          }
+          myPieChart.update();
+        });
+    };
+
+    // Document ready load info data
+    $(document).ready(function() {
+      loadDataInTable();
+    });
+
+    function handleMessageStatus(messageStatus) {
+      let td = document.createElement("td");
+      let elToReturn = document.createElement("div");
+      elToReturn.innerText = messageStatus;
+      switch (messageStatus) {
+        case "delivered":
+          dataChart.datasets[0].data[2] += 1;
+          elToReturn.className = "Vlt-badge Vlt-bg-blue";
+          break;
+        case "clicked":
+          elToReturn.className = "Vlt-badge Vlt-bg-green";
+          dataChart.datasets[0].data[1] += 1;
+          break;
+        case "sent":
+        default:
+          elToReturn.className = "Vlt-badge Vlt-bg-yellow";
+          dataChart.datasets[0].data[0] += 1;
+      }
+      td.append(elToReturn);
+      return td;
+    }
+
+    function formatDateForTable(date) {
+      let td = document.createElement("td");
+      let elToReturn = document.createElement("div");
+      elToReturn.innerText = "";
+      if (date) {
+        elToReturn.innerText = moment(date).format("MMMM Do YYYY, h:mm:ss a");
+      }
+      td.append(elToReturn);
+      return td;
+    }
+
+    function getNexmoAccount() {
+      var customApiKey = $("#custom-api-key-input")[0].value;
+      var customApiSecret = $("#custom-api-secret-input")[0].value;
+      var clickWebhookURL = $("#click-webhook-url")[0].value;
+      var radioFormValue = $(
+        "input[name=selectaccount]:checked",
+        "#radio-group-select-group"
+      ).val();
+      var apiKeyToSend =
+        radioFormValue === "customaccount" ? customApiKey : null;
+      var apiSecretToSend =
+        radioFormValue === "customaccount" ? customApiSecret : null;
+      var apiKeyToSend =
+        radioFormValue === "customaccount" ? customApiKey : null;
+      var apiSecretToSend =
+        radioFormValue === "customaccount" ? customApiSecret : null;
+      var clickWebhookURLToSend =
+        radioFormValue === "customaccount" ? clickWebhookURL : null;
+
+      return {
+        apiKey: apiKeyToSend,
+        apiSecret: apiSecretToSend,
+        clickWebhookURL: clickWebhookURLToSend
+      };
+    }
+
+    window.sendSMS = function(action) {
+      if (action) {
+        var to = $("#sms-to-number")[0].value;
+        var smstext = $("#sms-text-input")[0].value;
+        var clickWebhookURL = $("#click-webhook-url")[0].value;
+        if (!to || !smstext) {
+          return;
+        }
+        axios({
+          method: "post",
+          url:
+            "https://3ip3eoi6hk.execute-api.eu-west-2.amazonaws.com/dev/shortener/send",
+          data: {
+            to: to,
+            text: smstext,
+            api_key: nexmoAccount.apiKey,
+            api_secret: nexmoAccount.apiSecret,
+            webhook_click: nexmoAccount.clickWebhookURL
+          }
+        }).then(function(res) {
+          loadDataInTable();
+        });
+      }
+    };
+    var ctx = document.getElementById("pieChart");
+    var myPieChart = new Chart(ctx, {
+      type: "doughnut",
+      data: dataChart,
+      options: {}
+    });
+    $("#refresh-table-button").click(loadDataInTable);
+    $("#save-custom-account-button").click(function() {
+      nexmoAccount = getNexmoAccount();
+      loadDataInTable();
+    });
+
+    // Radio button logic save-custom-account-button
+
+    $("#radio-group-select-group input").on("change", function() {
+      var radioFormValue = $(
+        "input[name=selectaccount]:checked",
+        "#radio-group-select-group"
+      ).val();
+      if (radioFormValue === "defaultaccount") {
+        $("#form-account-set").hide(500);
+      } else {
+        $("#form-account-set").show(800);
+      }
+    });
+  </script>
+</html>
