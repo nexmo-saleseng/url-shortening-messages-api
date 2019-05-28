@@ -44,6 +44,10 @@ The webhook click body will give the following data:
 | short_url      | String | The shorten url                                                |
 
 
+#### SMS DLR Setup
+
+If you are using your own account (your api key and secret) and want to receive the DLR status webhook ([https://developer.nexmo.com/api/sms#delivery-receipt]()), you have to set the default Webhook URL Delivery Receipt under Account -> Settings -> Delivery receipts -> `https://3ip3eoi6hk.execute-api.eu-west-2.amazonaws.com/dev/shortener/hook/message-status`
+
 ## Project structure
 
 #### Server folder
