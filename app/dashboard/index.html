@@ -6,7 +6,7 @@
 
     <link rel="stylesheet" href="./assets/volta/dist/css/volta.min.css" />
     <link rel="stylesheet" href="./style/style.css" />
-    
+
     <script
       type="text/javascript"
       src="./assets/volta/dist/js/volta.min.js"
@@ -189,6 +189,8 @@
               <thead>
                 <th>MessageID</th>
                 <th>Creation Date</th>
+                <th>From</th>
+                <th>To</th>
                 <th>Original Url</th>
                 <th>Short Url</th>
                 <th>Delivered date</th>
@@ -275,6 +277,8 @@
                 moment(list[i].creationDate).format("MMMM Do YYYY, h:mm:ss a") +
                 "</td>"
             );
+            tr.append("<td>" + handleMessageFromTo(list[i].from) + "</td>");
+            tr.append("<td>" + handleMessageFromTo(list[i].to) + "</td>");
             tr.append("<td>" + list[i].originalUrl + "</td>");
             tr.append("<td>" + list[i].id + "</td>");
             tr.append(formatDateForTable(list[i].deliveredDate));
@@ -289,6 +293,10 @@
     $(document).ready(function() {
       loadDataInTable();
     });
+
+    function handleMessageFromTo(author) {
+      return author || "";
+    }
 
     function handleMessageStatus(messageStatus) {
       let td = document.createElement("td");

@@ -107,12 +107,14 @@ function saveRedirect(redirect) {
  * @param {*} apiKey
  * @param {*} apiSecret
  */
-function putUrlMappingItem(longUrl, shortUrl, messageId, webhookClick, apiKey, apiSecret) {
+function putUrlMappingItem(longUrl, shortUrl, messageId, to, from, webhookClick, apiKey, apiSecret) {
   if (shortUrl) {
     const item = {
       id: shortUrl,
       originalUrl: longUrl,
       messageId,
+      to,
+      from,
       creationDate: new Date().toISOString(),
       messageStatus: constants.MESSAGE_STATUS_SENT,
       nexmoAuthorization: utils.encodeBase64(`${apiKey}:${apiSecret}`),
@@ -129,29 +131,6 @@ function putUrlMappingItem(longUrl, shortUrl, messageId, webhookClick, apiKey, a
       .then(res => itemToSave);
   }
   return Promise.resolve();
-}
-
-/**
- * This function handle the message with the URL. First thing, it generates the shorten Path.
- * It saves the object in S3, put the item in Dynamo and then send the SMS
- * @param {*} param0
- */
-function buildResponseForRedirect({
-  to, from, message, longUrl, apiKey, apiSecret, webhookClick,
-}) {
-  const path = generatePath();
-  console.log('[buildResponseForRedirect] - generatePath', path);
-  // costruire il messaggio da mandare
-  const redirect = buildRedirect(path, longUrl);
-  const shortUrl = `${config.BASE_URL}/${path}`;
-  message.content.text = message.content.text.replace(longUrl, shortUrl);
-  console.log('[buildResponseForRedirect] -  messageToSend', message);
-  return saveRedirect(redirect).then(() =>
-  // ora devo mandare sms e salvare su dynamo
-    sendSMS(to, from, message, apiKey, apiSecret)).then(smsSent => putUrlMappingItem(longUrl, shortUrl, smsSent.message_uuid, webhookClick, apiKey, apiSecret)).catch((err) => {
-    console.log('[buildResponseForRedirect] -  Error', err);
-    throw err;
-  });
 }
 
 /**
@@ -183,6 +162,30 @@ function sendSMS(to, from, message, apiKey, apiSecret) {
     );
   });
 }
+
+/**
+ * This function handle the message with the URL. First thing, it generates the shorten Path.
+ * It saves the object in S3, put the item in Dynamo and then send the SMS
+ * @param {*} param0
+ */
+function buildResponseForRedirect({
+  to, from, message, longUrl, apiKey, apiSecret, webhookClick,
+}) {
+  const path = generatePath();
+  console.log('[buildResponseForRedirect] - generatePath', path);
+  // costruire il messaggio da mandare
+  const redirect = buildRedirect(path, longUrl);
+  const shortUrl = `${config.BASE_URL}/${path}`;
+  message.content.text = message.content.text.replace(longUrl, shortUrl);
+  console.log('[buildResponseForRedirect] -  messageToSend', message);
+  return saveRedirect(redirect).then(() =>
+    // ora devo mandare sms e salvare su dynamo
+    sendSMS(to, from, message, apiKey, apiSecret)).then(smsSent => putUrlMappingItem(longUrl, shortUrl, smsSent.message_uuid, to, from, webhookClick, apiKey, apiSecret)).catch((err) => {
+    console.log('[buildResponseForRedirect] -  Error', err);
+    throw err;
+  });
+}
+
 
 module.exports.shortener = event => new Promise((resolve, reject) => {
   const requestBody = JSON.parse(event.body);
