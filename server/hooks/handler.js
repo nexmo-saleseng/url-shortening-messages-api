@@ -43,13 +43,13 @@ async function setDeliveryStatus({ messageId, timestamp, status }) {
  * This method handle the message status webhook
  * Example of payload in body:
  * {
-        "message_uuid": "4838e1dd-4678-4fe9-816b-00b66d192872",
+        "message_uuid": "123456789-2345-13452-",
         "to": {
-            "number": "447749725766",
+            "number": "xxxxxxx",
             "type": "sms"
         },
         "from": {
-            "number": "447418397453",
+            "number": "xxxxx",
             "type": "sms"
         },
         "timestamp": "2019-05-20T11:29:09.479Z",
