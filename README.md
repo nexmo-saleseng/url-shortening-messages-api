@@ -79,3 +79,16 @@ The web app lets you:
 - Specify account to use and send SMS
 - Display Pie Chart with statistic regarding messages status
 
+#### Use it in your AWS account
+
+If you want to use this project in your AWS account, using Serverless Framework is really simple:
+
+```
+cd server
+npm i
+serverless deploy
+```
+Then, go to Lambda menu, switch to Nort Virginia region and create a Lambda function.
+Upload the code inside the Lambda Edge folder. Lastly, add the cloudfront trigger from the left menu of the lambda function interface. 
+
+Click Deploy and you are ready to go!
